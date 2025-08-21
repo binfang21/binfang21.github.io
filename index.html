@@ -1,0 +1,275 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>硅谷贴心房产经理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        .service-card, .property-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .service-card:hover, .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .property-img {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+    </style>
+    <script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+            return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+            if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+                try {
+                    var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                    var firstSheetName = workbook.SheetNames[0];
+                    var worksheet = workbook.Sheets[firstSheetName];
+
+                    // Convert sheet to JSON to filter blank rows
+                    var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                    // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                    var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                    // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                    var headerRowIndex = filteredData.findIndex((row, index) =>
+                      row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                    );
+                    // Fallback
+                    if (headerRowIndex === -1 || headerRowIndex > 25) {
+                      headerRowIndex = 0;
+                    }
+
+                    // Convert filtered JSON back to CSV
+                    var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                    csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                    return csv;
+                } catch (e) {
+                    console.error(e);
+                    return "";
+                }
+            }
+            return gk_fileData[filename] || "";
+        }
+    </script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- 導航欄 -->
+    <nav class="bg-blue-600 text-white p-4 sticky top-0 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <h1 class="text-2xl font-bold">硅谷贴心房产经理</h1>
+            </div>
+            <div class="space-x-4">
+                <a href="#services" class="hover:underline">服务</a>
+                <a href="#recent-purchases" class="hover:underline">最近购买</a>
+                <a href="#recent-sales" class="hover:underline">最近出售</a>
+                <a href="#contact" class="hover:underline">联系我们</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主題部分 -->
+    <header class="bg-blue-800 text-white py-16 text-center">
+        <div class="container mx-auto flex items-center justify-center flex-col">
+            <img src="me.jpeg" alt="个人头像" class="mb-4 border-2 border-white">
+            <h2 class="text-4xl font-bold mb-4">欢迎体验硅谷贴心房产经理</h2>
+            <p class="text-lg">我们为您提供专业的买房、卖房和出租代管服务</p>
+        </div>
+    </header>
+
+    <!-- 服務部分 -->
+    <section id="services" class="py-16">
+        <div class="container mx-auto px-4">
+            <h3 class="text-3xl font-bold text-center mb-12">我们的服务</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="service-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <h4 class="text-xl font-semibold mb-4">买房</h4>
+                    <p>我们帮助您找到梦想中的家，提供全程指导，从选房到签约，确保您买得安心。</p>
+                </div>
+                <div class="service-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <h4 class="text-xl font-semibold mb-4">卖房</h4>
+                    <p>通过专业市场分析和营销策略，我们助您以最佳价格快速出售房产。</p>
+                </div>
+                <div class="service-card bg-white p-6 rounded-lg shadow-md text-center">
+                    <h4 class="text-xl font-semibold mb-4">出租代管</h4>
+                    <p>我们提供全面的物业管理服务，包括租户筛选、租金收取和维护管理，让您省心省力。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 最近購買的房產 -->
+    <section id="recent-purchases" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h3 class="text-3xl font-bold text-center mb-12">最近帮客户购买的房产</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="property-card bg-gray-100 p-6 rounded-lg shadow-md">
+                    <img src="Buy_1.jpeg" alt="现代别墅" class="property-img rounded-t-lg">
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold mb-2">现代别墅</h4>
+                        <p>位于硅谷核心地段，4房2卫，带大花园，适合家庭居住。</p>
+                    </div>
+                </div>
+                <div class="property-card bg-gray-100 p-6 rounded-lg shadow-md">
+                    <img src="Buy_2.jpeg" alt="市中心公寓" class="property-img rounded-t-lg">
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold mb-2">市中心公寓</h4>
+                        <p>4房3卫高层公寓，享有城市天际线景观，交通便利。</p>
+                    </div>
+                </div>
+                <div class="property-card bg-gray-100 p-6 rounded-lg shadow-md">
+                    <img src="Buy_3.jpeg" alt="郊区别墅" class="property-img rounded-t-lg">
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold mb-2">郊区别墅</h4>
+                        <p>宽敞4房别墅，带私人泳池，安静社区，适合度假式生活。</p>
+                    </div>
+                </div>
+                <div class="property-card bg-gray-100 p-6 rounded-lg shadow-md">
+                    <img src="Buy_4.jpeg" alt="联排别墅" class="property-img rounded-t-lg">
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold mb-2">联排别墅</h4>
+                        <p>3房3卫现代联排别墅，靠近科技园区，适合年轻专业人士。</p>
+                    </div>
+                </div>
+                <div class="property-card bg-gray-100 p-6 rounded-lg shadow-md">
+                    <img src="Buy_5.jpeg" alt="乡村小屋" class="property-img rounded-t-lg">
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold mb-2">乡村小屋</h4>
+                        <p>5房4卫温馨小屋，周围绿树环绕，享受田园生活。</p>
+                    </div>
+                </div>
+                <div class="property-card bg-gray-100 p-6 rounded-lg shadow-md">
+                    <img src="Buy_6.jpeg" alt="豪华庄园" class="property-img rounded-t-lg">
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold mb-2">豪华庄园</h4>
+                        <p>4房3卫高端庄园，配备私人影院和健身房，尊享奢华。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 最近賣出的房產 -->
+    <section id="recent-sales" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h3 class="text-3xl font-bold text-center mb-12">最近帮客户卖出的房产</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="property-card bg-gray-100 p-6 rounded-lg shadow-md">
+                    <img src="Sell_1.jpeg" alt="海景公寓" class="property-img rounded-t-lg">
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold mb-2">海景公寓</h4>
+                        <p>4房3卫海景公寓，靠近海滨，快速成交于高价。</p>
+                    </div>
+                </div>
+                <div class="property-card bg-gray-100 p-6 rounded-lg shadow-md">
+                    <img src="Sell_2.jpeg" alt="家庭住宅" class="property-img rounded-t-lg">
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold mb-2">家庭住宅</h4>
+                        <p>3房3卫宽敞住宅，学区房，吸引多位买家竞价。</p>
+                    </div>
+                </div>
+                <div class="property-card bg-gray-100 p-6 rounded-lg shadow-md">
+                    <img src="Sell_3.jpeg" alt="现代公寓" class="property-img rounded-t-lg">
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold mb-2">现代公寓</h4>
+                        <p>3房2卫单身公寓，市中心地段，快速售出。</p>
+                    </div>
+                </div>
+                <div class="property-card bg-gray-100 p-6 rounded-lg shadow-md">
+                    <img src="Sell_4.jpeg" alt="乡村庄园" class="property-img rounded-t-lg">
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold mb-2">乡村庄园</h4>
+                        <p>2房2卫庄园，带大片土地，成功售予投资买家。</p>
+                    </div>
+                </div>
+                <div class="property-card bg-gray-100 p-6 rounded-lg shadow-md">
+                    <img src="Sell_5.jpeg" alt="联排住宅" class="property-img rounded-t-lg">
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold mb-2">联排住宅</h4>
+                        <p>3房2卫联排房，靠近商业区，短时间内高价成交。</p>
+                    </div>
+                </div>
+                <div class="property-card bg-gray-100 p-6 rounded-lg shadow-md">
+                    <img src="Sell_6.jpeg" alt="豪华别墅" class="property-img rounded-t-lg">
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold mb-2">豪华别墅</h4>
+                        <p>3房2卫高端别墅，配备智能家居系统，顺利售出。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 聯繫部分 -->
+    <section id="contact" class="bg-gray-200 py-16">
+        <div class="container mx-auto px-4 text-center">
+            <h3 class="text-3xl font-bold mb-8">联系我们</h3>
+            <p class="text-lg mb-4">邮箱: <a href="mailto:bfang21@gmail.com" class="text-blue-600 hover:underline">bfang21@gmail.com</a></p>
+            <p class="text-lg mb-4">电话: <a href="tel:+14081234567" class="text-blue-600 hover:underline">01-4081234567</a></p>
+            <button id="contactButton" class="mt-6 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+                获取免费咨询
+            </button>
+        </div>
+    </section>
+
+    <!-- 頁腳 -->
+    <footer class="bg-blue-600 text-white py-4 text-center">
+        <p>&copy; 2025 硅谷贴心房产经理. 保留所有权利.</p>
+    </footer>
+
+    <script>
+        // 簡單的交互功能：點擊按鈕顯示提示
+        document.getElementById('contactButton').addEventListener('click', () => {
+            alert('感谢您的兴趣！我们将尽快通过邮箱或电话联系您。');
+        });
+    </script>
+</body>
+</html>
